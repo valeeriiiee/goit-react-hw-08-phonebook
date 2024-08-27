@@ -3,14 +3,18 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFilter } from '../redux/filterSlice';
-import { fetchContacts, addContact, deleteContact } from '../redux/operations';
+import { setFilter } from '../redux/filter/filterSlice';
+import {
+  fetchContacts,
+  addContact,
+  deleteContact,
+} from '../redux/contacts/contactOperations';
 import {
   selectFilter,
   selectVisibleContacts,
   selectIsLoading,
   selectError,
-} from '../redux/selectors';
+} from '../redux/contacts/contactSelectors';
 
 export const App = () => {
   const visibleContacts = useSelector(selectVisibleContacts);
