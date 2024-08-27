@@ -1,69 +1,58 @@
-import React, { useEffect } from 'react';
-import { ContactForm } from './ContactForm/ContactForm';
-import { Filter } from './Filter/Filter';
-import { ContactList } from './ContactList/ContactList';
-import { useSelector, useDispatch } from 'react-redux';
-import { setFilter } from '../redux/filter/filterSlice';
-import {
-  fetchContacts,
-  addContact,
-  deleteContact,
-} from '../redux/contacts/contactOperations';
-import {
-  selectFilter,
-  selectVisibleContacts,
-  selectIsLoading,
-  selectError,
-} from '../redux/contacts/contactSelectors';
+import { SharedLayout } from '../pages/SharedLayout';
+import { HomePage } from 'pages/HomePage';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import LoginPage from '../pages/LoginPage';
+import RegisterPage from '../pages/RegisterPage';
+import { RestrictedRoute } from './RestrictedRoute/RestrictedRoute';
+import { PrivateRoute } from './PrivateRoute/PrivateRoute';
+import { ContactsPage } from '../pages/ContactsPage';
 
 export const App = () => {
-  const visibleContacts = useSelector(selectVisibleContacts);
-  const filter = useSelector(selectFilter);
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-
-  const handleAddContact = newContact => {
-    dispatch(addContact(newContact));
-  };
-
-  const handleDeleteContact = id => {
-    dispatch(deleteContact(id));
-  };
-
-  const handleSetFilter = newFilter => {
-    dispatch(setFilter(newFilter));
-  };
-
-  const filterContacts = contacts => {
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
-  };
+  // const isLoggedIn = true;
 
   return (
-    <div>
-      <h1>Phonebook</h1>
-      <ContactForm addContact={handleAddContact} contacts={visibleContacts} />
+    <>
+      <Routes>
+        <Route path="/" element={<SharedLayout />}>
+          <Route index element={<HomePage />} />
 
-      <h2>Contacts</h2>
-      <Filter filter={filter} setFilter={handleSetFilter} />
-      {isLoading && (
-        <b style={{ display: 'block', padding: '0 0 20px 10px' }}>Loading...</b>
-      )}
-      {error && <b>Error: {error}</b>}
-      {visibleContacts && (
-        <ContactList
-          filterContact={filterContacts} // Function for filtering contacts
-          deleteContact={handleDeleteContact}
-          contacts={visibleContacts}
+          {/* CONTACTS PAGE IS RESTRICTED AND IS ONLY ACCESSIBLE BY SUCCESSFULLY REGISTERING IN THE REGISTER PAGE */}
+          <Route
+            path="/register"
+            element={
+              <RestrictedRoute
+                redirectTo="/contacts"
+                component={RegisterPage}
+              />
+            }
+          />
+          {/* CONTACTS PAGE IS RESTRICTED AND IS ONLY ACCESSIBLE BY SUCCESSFULLY LOGGING IN THE LOGIN PAGE */}
+          <Route
+            path="/login"
+            element={
+              <RestrictedRoute redirectTo="/contacts" component={LoginPage} />
+            }
+          />
+        </Route>
+        {/* CONTACTS PAGE IS PRIVATE AND IS REDIRECTED TO LOGIN PAGE IF USER IS NOT AUTHENTICATED*/}
+        <Route
+          path="/contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={ContactsPage} />
+          }
         />
-      )}
-    </div>
+      </Routes>
+
+      {/* conditional rendering */}
+      {/* {isLoggedIn ? (
+        <div>The user is logged in!</div>
+      ) : (
+        <div>The user is logged out!</div>
+      )} */}
+    </>
   );
 };
+
+// if isLoggedIn is true, we will show the div with the logged in string.
+// if isLoggedIn is false, we will show the div with the logged out string.
