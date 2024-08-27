@@ -1,49 +1,45 @@
 import React, { useEffect } from 'react';
-import { ContactForm } from './ContactForm/ContactForm';
-import { Filter } from './Filter/Filter';
-import { ContactList } from './ContactList/ContactList';
 import { useSelector, useDispatch } from 'react-redux';
+import { fetchContacts } from '../redux/contacts/contactOperations';
 import { setFilter } from '../redux/filter/filterSlice';
+import { addContact, deleteContact } from '../redux/contacts/contactOperations';
 import {
-  fetchContacts,
-  addContact,
-  deleteContact,
-} from '../redux/contacts/contactOperations';
-import {
-  selectFilter,
   selectVisibleContacts,
   selectIsLoading,
+  selectFilter,
   selectError,
 } from '../redux/contacts/contactSelectors';
+import { ContactForm } from 'components/ContactForm/ContactForm';
+import { Filter } from 'components/Filter/Filter';
+import { ContactList } from 'components/ContactList/ContactList';
 
-export const App = () => {
+export const ContactsPage = () => {
   const visibleContacts = useSelector(selectVisibleContacts);
-  const filter = useSelector(selectFilter);
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
+  const filter = useSelector(selectFilter);
 
   const dispatch = useDispatch();
+
+  console.log('visibleContacts', visibleContacts);
 
   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
   const handleAddContact = newContact => {
+    // Placeholder for future Redux action
     dispatch(addContact(newContact));
   };
 
   const handleDeleteContact = id => {
+    // Placeholder for future Redux action
     dispatch(deleteContact(id));
   };
 
   const handleSetFilter = newFilter => {
+    // Placeholder for future Redux dispatch to update filter
     dispatch(setFilter(newFilter));
-  };
-
-  const filterContacts = contacts => {
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
   };
 
   return (
@@ -59,9 +55,8 @@ export const App = () => {
       {error && <b>Error: {error}</b>}
       {visibleContacts && (
         <ContactList
-          filterContact={filterContacts} // Function for filtering contacts
-          deleteContact={handleDeleteContact}
           contacts={visibleContacts}
+          deleteContact={handleDeleteContact}
         />
       )}
     </div>
